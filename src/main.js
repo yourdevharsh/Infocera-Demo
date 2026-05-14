@@ -1,59 +1,83 @@
-document.addEventListener("DOMContentLoaded", () => {  
+document.addEventListener("DOMContentLoaded", () => {
   // --- Mobile Menu Toggle ---
   const mobileMenuBtn = document.getElementById("mobileMenuBtn");
   const mobileMenu = document.getElementById("mobileMenu");
+  const mobileLinks = document.querySelectorAll(".mobile-link");
   let isMenuOpen = false;
 
-  mobileMenuBtn.addEventListener("click", () => {
+  function toggleMenu() {
     isMenuOpen = !isMenuOpen;
     if (isMenuOpen) {
-      mobileMenu.classList.remove("opacity-0", "pointer-events-none", "translate-y-[-20px]");
+      mobileMenu.classList.remove(
+        "opacity-0",
+        "pointer-events-none",
+        "translate-y-[-20px]",
+      );
       mobileMenu.classList.add("opacity-100", "translate-y-0");
-      // Change icon to 'X'
+      document.body.classList.add("overflow-hidden"); // Lock background scroll
       mobileMenuBtn.innerHTML = `<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>`;
     } else {
-      mobileMenu.classList.add("opacity-0", "pointer-events-none", "translate-y-[-20px]");
+      mobileMenu.classList.add(
+        "opacity-0",
+        "pointer-events-none",
+        "translate-y-[-20px]",
+      );
       mobileMenu.classList.remove("opacity-100", "translate-y-0");
-      // Change icon back to hamburger
+      document.body.classList.remove("overflow-hidden"); // Unlock background scroll
       mobileMenuBtn.innerHTML = `<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"></path></svg>`;
     }
+  }
+
+  mobileMenuBtn.addEventListener("click", toggleMenu);
+
+  // Close menu when a link is clicked
+  mobileLinks.forEach((link) => {
+    link.addEventListener("click", () => {
+      if (isMenuOpen) toggleMenu();
+    });
   });
 
   // --- Scroll Animations (Intersection Observer) ---
-  const animateElements = document.querySelectorAll('.animate-on-scroll');
-  
+  const animateElements = document.querySelectorAll(".animate-on-scroll");
+
   // Set initial state via JS so users without JS see content perfectly normally
-  animateElements.forEach(el => {
-    el.classList.add('opacity-0', 'translate-y-12', 'transition-all', 'duration-1000', 'ease-out');
+  animateElements.forEach((el) => {
+    el.classList.add(
+      "opacity-0",
+      "translate-y-12",
+      "transition-all",
+      "duration-1000",
+      "ease-out",
+    );
   });
 
   const observerOptions = {
     root: null,
-    rootMargin: '0px',
-    threshold: 0.15
+    rootMargin: "0px",
+    threshold: 0.15,
   };
 
   const observer = new IntersectionObserver((entries, observer) => {
-    entries.forEach(entry => {
+    entries.forEach((entry) => {
       if (entry.isIntersecting) {
         // Add a slight delay for better feel on entry
         setTimeout(() => {
-          entry.target.classList.remove('opacity-0', 'translate-y-12');
-          entry.target.classList.add('opacity-100', 'translate-y-0');
+          entry.target.classList.remove("opacity-0", "translate-y-12");
+          entry.target.classList.add("opacity-100", "translate-y-0");
         }, 50);
         observer.unobserve(entry.target);
       }
     });
   }, observerOptions);
 
-  animateElements.forEach(el => observer.observe(el));
+  animateElements.forEach((el) => observer.observe(el));
 
   // --- Carousel Logic ---
   const track = document.getElementById("carouselTrack");
   const prevBtn = document.getElementById("prevBtn");
   const nextBtn = document.getElementById("nextBtn");
   const indicator = document.getElementById("pageIndicator");
-  
+
   if (track && prevBtn && nextBtn && indicator) {
     const totalCards = track.children.length;
     let currentPage = 1;
